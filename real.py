@@ -1,13 +1,20 @@
-'''библиотека Pillow позволяет удобно работать с изображениями. Главной помощью в этом является класс Image
-и его методы. например этот класс с помощью метода формат позволяет нам конвертировать изображение в другой
-тип данных. С помощью size мы можем изменить размер фаайла. с помощью crop мы можем вырезать, обьединять.
-для работы с изображениями оень удобен.'''
+import asyncio
+from aiogram import Bot, Dispatcher, executor, types
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
-from PIL import Image
+api = 'оень интересные цифры'
+bot = Bot(token=api)
+dp = Dispatcher(bot, storage=MemoryStorage())
 
-cartinca = Image.open('xh.jpeg')
-l = cartinca.crop((25, 25, 75, 75))
-l.show()  # просмаатриваать или легко нааходить изображения
-print(cartinca.format, cartinca.size, cartinca.mode)  # gросмотр хаарактеристик
-cartinca.resize((10, 10))  # изменение размера
-cartinca.save('resized.jpeg')  # и конвертирование
+
+@dp.message_handler(commands=['start'])
+async def start_message(message):
+    print('Привет! Я бот помогающий твоему здоровью.')
+
+
+@dp.message_handler()
+async def all_message(message):
+    print('Введите команду /start, чтобы начать общение.')
+
+if __name__ == '__main__':
+    executor.start_polling(dp, skip_updates=True)
