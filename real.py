@@ -1,20 +1,26 @@
-import asyncio
-from aiogram import Bot, Dispatcher, executor, types
-from aiogram.contrib.fsm_storage.memory import MemoryStorage
+import sqlite3
 
-api = 'оень интересные цифры'
-bot = Bot(token=api)
-dp = Dispatcher(bot, storage=MemoryStorage())
+contact = sqlite3.connect('dt.db')
+cursor = contact.cursor()
 
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS User(
+id INTEGER PRIMARY KEY,
+username TEXT NOT NULL,
+email TEXT NOT NULL,
+age INTEGER,
+balance INTEGER NOT NULL
+)
+''')
+cursor.execute('''
+CREATE INDEX IF NOT EXISTS idx_email ON User(email)
+''')
 
-@dp.message_handler(commands=['start'])
-async def start_message(message):
-    print('Привет! Я бот помогающий твоему здоровью.')
-
-
-@dp.message_handler()
-async def all_message(message):
-    print('Введите команду /start, чтобы начать общение.')
-
-if __name__ == '__main__':
-    executor.start_polling(dp, skip_updates=True)
+cursor.execute('DELETE FROM User WHERE id = ?', (6,))
+cursor.execute('SELECT COUNT(*) FROM User')
+a = (cursor.fetchall()[0][0])
+cursor.execute('SELECT SUM(balance) FROM User')
+b = int(cursor.fetchall()[0][0])
+print(b / a)
+contact.commit()
+contact.close()
